@@ -1,0 +1,35 @@
+FROM php:8.2-apache
+
+# Instala extensões necessárias
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        git \
+        unzip \
+        libzip-dev \
+        libonig-dev \
+        pkg-config \
+    && docker-php-ext-install \
+        pdo_mysql \
+        mysqli \
+        mbstring \
+        sockets \
+        bcmath \
+        opcache \
+    && a2enmod rewrite headers \
+    && rm -rf /var/lib/apt/lists/*
+
+# Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+
+# Configura o VirtualHost para apontar para /public
+COPY apache-site.conf /etc/apache2/sites-available/000-default.conf
+
+WORKDIR /var/www/html
+
+# Mantém permissões mais permissivas para ambiente de dev
+RUN chown -R www-data:www-data /var/www/html
+
+# Comando padrão do Apache
+CMD ["apache2-foreground"]
+
+
