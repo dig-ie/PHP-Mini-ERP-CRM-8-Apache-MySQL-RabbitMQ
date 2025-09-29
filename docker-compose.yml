@@ -52,6 +52,31 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+
+  worker:
+    build:
+      context: .
+      dockerfile: Dockerfile-php-apache
+    container_name: worker
+    command: php bin/worker.php
+    environment:
+      APP_ENV: ${APP_ENV:-local}
+      APP_DEBUG: ${APP_DEBUG:-1}
+      DB_HOST: ${DB_HOST:-mysql}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_NAME: ${DB_NAME:-erp}
+      DB_USER: ${DB_USER:-erp_user}
+      DB_PASS: ${DB_PASS:-erp_pass}
+      RABBITMQ_HOST: ${RABBITMQ_HOST:-rabbitmq}
+      RABBITMQ_PORT: ${RABBITMQ_PORT:-5672}
+      RABBITMQ_USER: ${RABBITMQ_USER:-guest}
+      RABBITMQ_PASS: ${RABBITMQ_PASS:-guest}
+    volumes:
+      - ./:/var/www/html
+    depends_on:
+      - mysql
+      - rabbitmq
+    restart: unless-stopped
 #  adminer:
 #    image: adminer
 #    container_name: adminer
