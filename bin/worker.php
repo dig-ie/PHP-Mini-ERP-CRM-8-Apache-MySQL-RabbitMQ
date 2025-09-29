@@ -31,11 +31,21 @@ $callback = function ($msg) {
 
     echo ' [x] Received: ' . $body . PHP_EOL;
 
-    // Simula processamento: envio de email, atualização de estoque, etc.
-    usleep(300 * 1000); // 300ms
+    if ($data['type'] === 'order.created') {
+        
+        echo " [📧] Sending order confirmation email to client ID: {$data['client_id']}\n";
+        echo " [📧] Order #{$data['order_id']} - Total: R$ {$data['total_amount']}\n";
+        echo " [📧] Email sent successfully!\n";
+        
+        echo " [🔔] Notifying admin about new order #{$data['order_id']}\n";
+        
+        echo " [📦] Updating inventory for order #{$data['order_id']}\n";
+        
+        usleep(500 * 1000); // 500ms
+    }
 
     $msg->ack();
-    echo " [x] Done and ack'ed\n";
+    echo " [✅] Order processing completed!\n\n";
 };
 
 $channel->basic_consume($queue, '', false, false, false, false, $callback);
