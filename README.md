@@ -99,7 +99,7 @@ spec:
               cpu: "200m"
 ```
 
-## 📝 Observações para processos seletivos atuais
+## 📝 Observações para processos seletivos
 
 - **Ambiente legado:** Apache + mod_php (simulado em Docker)
 - **Mensageria:** RabbitMQ com `php-amqplib`
