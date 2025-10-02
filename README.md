@@ -99,7 +99,7 @@ spec:
               cpu: "200m"
 ```
 
-## 📝 Observações para Entrevista
+## 📝 Observações para processos seletivos atuais
 
 - **Ambiente legado:** Apache + mod_php (simulado em Docker)
 - **Mensageria:** RabbitMQ com `php-amqplib`
