@@ -33,6 +33,11 @@
             text-decoration: none; border-radius: 3px; font-size: 12px; margin-right: 5px;
         }
         .edit-btn:hover { background: #f57c00; }
+        .payments-btn { 
+            background: #4caf50; color: white; padding: 5px 10px; 
+            text-decoration: none; border-radius: 3px; font-size: 12px; margin-right: 5px;
+        }
+        .payments-btn:hover { background: #45a049; }
         .success { background: #d4edda; color: #155724; padding: 10px; border-radius: 4px; margin-bottom: 20px; }
         .error { background: #f8d7da; color: #721c24; padding: 10px; border-radius: 4px; margin-bottom: 20px; }
     </style>
@@ -108,6 +113,15 @@
                     <td><?= date('d/m/Y H:i', strtotime($client['created_at'])) ?></td>
                     <td>
                         <a href="/clients/edit?id=<?= $client['id'] ?>" class="edit-btn">Editar</a>
+                        <a href="/payments/create?client_id=<?= $client['id'] ?>" class="edit-btn" onclick="return confirm('Deseja criar uma nova cobrança para este cliente? <?php if (empty($client['cpf_cnpj'])) { echo "\\nAtenção: o CPF/CNPJ não está preenchido, necessário para criar o cliente na Asaas."; } ?>')">Criar cobrança</a>
+                
+                        <?php if ($client['has_payments'] ?? false): ?>
+                            </br>
+                            </br>
+                            <a href="/payments/client?client_id=<?= $client['id'] ?>" class="payments-btn">Ver cobranças geradas</a>
+                            
+                        <?php endif; ?>
+                        
                         <a href="/clients/delete?id=<?= $client['id'] ?>" 
                            class="delete-btn" 
                            onclick="return confirm('Tem certeza que deseja excluir este cliente?')">
