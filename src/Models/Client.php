@@ -8,14 +8,16 @@ use PDO;
 
 class Client
 {
-    public static function create(string $name, string $email = '', string $phone = ''): int
+    public static function create(string $name, string $email = '', string $phone = '', string $cpfCnpj = '', string $asaasCustomerId = null): int
     {
         $pdo = Database::pdo();
-        $stmt = $pdo->prepare('INSERT INTO clients (name, email, phone) VALUES (:name, :email, :phone)');
+        $stmt = $pdo->prepare('INSERT INTO clients (name, email, phone, cpf_cnpj, asaas_customer_id) VALUES (:name, :email, :phone, :cpf_cnpj, :asaas_customer_id)');
         $stmt->execute([
             'name' => $name,
             'email' => $email,
             'phone' => $phone,
+            'cpf_cnpj' => $cpfCnpj,
+            'asaas_customer_id' => $asaasCustomerId,
         ]);
         return (int)$pdo->lastInsertId();
     }
@@ -43,16 +45,27 @@ class Client
         return $row ?: null;
     }
 
-    public static function update(int $id, string $name, string $email = '', string $phone = ''): bool
+    public static function update(int $id, string $name, string $email = '', string $phone = '', string $cpfCnpj = '', ?string $asaasCustomerId = null): bool
     {
         $pdo = Database::pdo();
-        $stmt = $pdo->prepare('UPDATE clients SET name = :name, email = :email, phone = :phone WHERE id = :id');
+        $stmt = $pdo->prepare('UPDATE clients SET name = :name, email = :email, phone = :phone, cpf_cnpj = :cpf_cnpj, asaas_customer_id = :asaas_customer_id WHERE id = :id');
         return $stmt->execute([
             'id' => $id,
             'name' => $name,
             'email' => $email,
             'phone' => $phone,
+            'cpf_cnpj' => $cpfCnpj,
+            'asaas_customer_id' => $asaasCustomerId,
         ]);
+    }
+
+    public static function findByAsaasCustomerId(string $asaasCustomerId): ?array
+    {
+        $pdo = Database::pdo();
+        $stmt = $pdo->prepare('SELECT * FROM clients WHERE asaas_customer_id = :asaas_customer_id LIMIT 1');
+        $stmt->execute(['asaas_customer_id' => $asaasCustomerId]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ?: null;
     }
 }
 

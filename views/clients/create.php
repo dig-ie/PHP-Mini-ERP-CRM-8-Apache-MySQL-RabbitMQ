@@ -18,6 +18,10 @@
         <input type="text" name="name" placeholder="Nome" required />
         <input type="email" name="email" placeholder="Email" />
         <input type="text" name="phone" placeholder="Telefone" />
+        <input type="text" name="cpf_cnpj" placeholder="CPF/CNPJ" />
+        <label>
+            <input type="checkbox" name="create_asaas" value="1" /> Criar cliente na Asaas?
+        </label>
         <div>
             <button type="submit">Salvar</button>
             <a href="/dashboard">Cancelar</a>

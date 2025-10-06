@@ -37,6 +37,10 @@
         <input type="text" name="name" placeholder="Nome" value="<?= htmlspecialchars($client['name']) ?>" required />
         <input type="email" name="email" placeholder="Email" value="<?= htmlspecialchars($client['email'] ?: '') ?>" />
         <input type="text" name="phone" placeholder="Telefone" value="<?= htmlspecialchars($client['phone'] ?: '') ?>" />
+        <input type="text" name="cpf_cnpj" placeholder="CPF/CNPJ" value="<?= htmlspecialchars($client['cpf_cnpj'] ?: '') ?>" />
+        <label>
+            <input type="checkbox" name="create_asaas" value="1" <?= !empty($client['asaas_customer_id']) ? '' : '' ?> /> Criar cliente na Asaas?
+        </label>
         
         <div class="actions">
             <button type="submit" class="btn-primary">Salvar</button>
