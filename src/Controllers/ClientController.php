@@ -27,13 +27,28 @@ class ClientController
         $name = trim((string)($_POST['name'] ?? ''));
         $email = trim((string)($_POST['email'] ?? ''));
         $phone = trim((string)($_POST['phone'] ?? ''));
+        $cpfCnpj = trim((string)($_POST['cpf_cnpj'] ?? ''));
+        $createAsaas = isset($_POST['create_asaas']) && $_POST['create_asaas'] === '1';
 
         if ($name === '') {
             header('Location: /clients/create?error=1');
             exit;
         }
 
-        $clientId = Client::create($name, $email, $phone);
+        $asaasCustomerId = null;
+        if ($createAsaas && $cpfCnpj !== '') {
+            $asaas = new \App\Services\AsaasService();
+            $asaas->setDebugMode(true);
+            $createdCustomer = $asaas->createCustomer([
+                'name' => $name,
+                'cpfCnpj' => $cpfCnpj,
+                'email' => $email,
+                'phone' => $phone,
+            ]);
+            $asaasCustomerId = $createdCustomer['id'] ?? null;
+        }
+
+        $clientId = Client::create($name, $email, $phone, $cpfCnpj, $asaasCustomerId);
         header('Location: /dashboard?client_id=' . $clientId);
         exit;
     }
@@ -83,13 +98,29 @@ class ClientController
         $name = trim((string)($_POST['name'] ?? ''));
         $email = trim((string)($_POST['email'] ?? ''));
         $phone = trim((string)($_POST['phone'] ?? ''));
+        $cpfCnpj = trim((string)($_POST['cpf_cnpj'] ?? ''));
+        $createAsaas = isset($_POST['create_asaas']) && $_POST['create_asaas'] === '1';
 
         if ($id <= 0 || $name === '') {
             header('Location: /clients/edit?id=' . $id . '&error=1');
             exit;
         }
 
-        $success = Client::update($id, $name, $email, $phone);
+        $client = Client::findById($id);
+        $asaasCustomerId = $client['asaas_customer_id'] ?? null;
+        if (!$asaasCustomerId && $createAsaas && $cpfCnpj !== '') {
+            $asaas = new \App\Services\AsaasService();
+            $asaas->setDebugMode(true);
+            $createdCustomer = $asaas->createCustomer([
+                'name' => $name,
+                'cpfCnpj' => $cpfCnpj,
+                'email' => $email,
+                'phone' => $phone,
+            ]);
+            $asaasCustomerId = $createdCustomer['id'] ?? null;
+        }
+
+        $success = Client::update($id, $name, $email, $phone, $cpfCnpj, $asaasCustomerId);
         if ($success) {
             header('Location: /dashboard?updated=client');
         } else {
