@@ -181,6 +181,27 @@ class AsaasService
     }
 
     /**
+     * Creates a payment (cobrança) in Asaas
+     *
+     * @param array $paymentData Required: customer, billingType, value, dueDate
+     * @return array Created payment payload
+     * @throws Exception
+     */
+    public function createPayment(array $paymentData): array
+    {
+        $endpoint = '/payments';
+
+        $required = ['customer', 'billingType', 'value', 'dueDate'];
+        foreach ($required as $field) {
+            if (!isset($paymentData[$field]) || $paymentData[$field] === '' || $paymentData[$field] === null) {
+                throw new Exception("Field {$field} is required to create payment");
+            }
+        }
+
+        return $this->sendRequest('POST', $endpoint, $paymentData);
+    }
+
+    /**
      * Sends a request to Asaas API
      * 
      * @param string $method HTTP method (GET, POST, PUT, DELETE)
