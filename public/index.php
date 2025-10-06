@@ -3,23 +3,36 @@ declare(strict_types=1);
 
 session_start();
 
-// Autoload do Composer (se existir)
 $autoloadPath = __DIR__ . '/../vendor/autoload.php';
 if (file_exists($autoloadPath)) {
     require $autoloadPath;
 }
 
+$envFile = __DIR__ . '/../.env';
+if (file_exists($envFile)) {
+    $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        if (str_starts_with(trim($line), '#')) { continue; }
+        $parts = explode('=', $line, 2);
+        if (count($parts) === 2) {
+            $key = trim($parts[0]);
+            $value = trim($parts[1]);
+            if (getenv($key) === false) {
+                putenv($key . '=' . $value);
+            }
+        }
+    }
+}
+
 use App\Controllers\AuthController;
 use App\Controllers\ClientController;
 use App\Controllers\OrderController;
-
-// Roteamento simples baseado em método/URI
+use App\Controllers\PaymentController;
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 $uri = parse_url($_SERVER['REQUEST_URI'] ?? '/', PHP_URL_PATH);
 
 header('Content-Type: text/html; charset=utf-8');
 
-// Rotas
 if ($uri === '/login' && $method === 'GET') {
     AuthController::showLogin();
     exit;
@@ -73,7 +86,20 @@ if ($uri === '/orders/update' && $method === 'POST') {
     exit;
 }
 
-// Dashboard com tabelas
+if ($uri === '/payments/create' && $method === 'GET') {
+    PaymentController::showCreate();
+    exit;
+}
+if ($uri === '/payments/store' && $method === 'POST') {
+    PaymentController::store();
+    exit;
+}
+if ($uri === '/payments/client' && $method === 'GET') {
+    PaymentController::showByClient();
+    exit;
+}
+
+// Dashboard
 if ($uri === '/' || $uri === '/dashboard') {
     if (!isset($_SESSION['user_id'])) {
         echo '<h1>Mini ERP/CRM</h1>';
@@ -81,9 +107,14 @@ if ($uri === '/' || $uri === '/dashboard') {
         exit;
     }
     
-    // Buscar dados para o dashboard
     $clients = \App\Models\Client::findAll();
     $orders = \App\Models\Order::findAll();
+    
+    foreach ($clients as &$client) {
+        $payments = \App\Models\Payment::findByClientId((int)$client['id']);
+        $client['has_payments'] = !empty($payments);
+    }
+    unset($client);
     
     require __DIR__ . '/../views/dashboard.php';
     exit;
