@@ -1,108 +1,63 @@
-# Mini ERP/CRM — Boilerplate (Apache + PHP 8 + MySQL + RabbitMQ)
+# CRM ERP
 
-## 🚀 Início Rápido
+## Integração com Asaas
 
-### Opção 1: Script Automático (Recomendado)
+Este projeto inclui uma integração com a API da Asaas para gerenciamento de clientes e cobranças.
 
-```bash
-# Windows
-start.bat
+### Configuração
 
-# Linux/Mac
-chmod +x start.sh
-./start.sh
+1. Copie o arquivo `env.example` para `.env`:
+
+   ```
+   cp env.example .env
+   ```
+
+2. Configure as variáveis de ambiente da Asaas no arquivo `.env`:
+
+   ```
+   ASAAS_API_URL=https://api-sandbox.asaas.com/v3
+   ASAAS_ACCESS_TOKEN=seu_token_aqui
+   ```
+
+   - Para ambiente de sandbox, use: `https://api-sandbox.asaas.com/v3`
+   - Para ambiente de produção, use: `https://api.asaas.com/v3`
+
+### Exemplo de uso do serviço Asaas
+
+```php
+// Criar um cliente
+$asaasService = new \App\Services\AsaasService();
+
+$customerData = [
+    "name" => "Cliente teste 1",
+    "cpfCnpj" => "08651423438",
+    "email" => "john.doe@asaas.com.br",
+    "phone" => "4738010919",
+    "mobilePhone" => "4799376637",
+    "address" => "Av. Paulista",
+    "addressNumber" => "150",
+    "complement" => "Sala 201",
+    "province" => "Centro",
+    "postalCode" => "01310-000",
+    "externalReference" => "12987382",
+    "notificationDisabled" => false,
+    "additionalEmails" => "john.doe@asaas.com,john.doe.silva@asaas.com.br",
+    "municipalInscription" => "46683695908",
+    "stateInscription" => "646681195275",
+    "observations" => "ótimo pagador, nenhum problema até o momento",
+    "groupName" => null,
+    "company" => null,
+    "foreignCustomer" => false
+];
+
+try {
+    $customer = $asaasService->createCustomer($customerData);
+    print_r($customer);
+} catch (Exception $e) {
+    echo "Erro: " . $e->getMessage();
+}
 ```
 
-### Opção 2: Docker Compose Manual
+### Documentação da API
 
-```bash
-# Na raiz do projeto
-docker-compose up -d
-```
-
-## 🌐 Acessos
-
-- **Aplicação Web:** http://localhost:8080
-- **RabbitMQ Management:** http://localhost:15672 (guest/guest)
-- **MySQL:** localhost:3307 (erp_user/erp_pass)
-
-## 🔧 Comandos Úteis
-
-```bash
-# Ver status dos containers
-docker-compose ps
-
-# Ver logs do worker
-docker logs -f worker
-
-# Acessar container da aplicação
-docker exec -it php_apache bash
-
-# Parar sistema
-docker-compose down
-```
-
-### Banco de dados
-
-- MySQL exposto em 3307 (host) -> 3306 (container)
-- DB: erp, user: erp_user, pass: erp_pass
-- Schema inicial em `sql/init.sql` (admin: admin@example.com / senha: admin123)
-
-### Estrutura
-
-- `public/` DocumentRoot e roteador (`index.php`)
-- `src/` Controllers, Models, Services, Queue
-- `config/` `db.php` (PDO)
-- `bin/` `worker.php` (consumidor RabbitMQ)
-
-## 🏭 Diferenças para Produção
-
-### Desenvolvimento (Atual)
-
-- ✅ Worker automático via Docker Compose
-- ✅ Restart automático (`restart: unless-stopped`)
-- ✅ Logs centralizados
-- ✅ Ambiente isolado
-
-### Produção (Recomendações)
-
-- 🔄 **Process Manager:** Supervisor, PM2, ou Systemd
-- 📊 **Monitoramento:** Prometheus + Grafana
-- 🔒 **Segurança:** Secrets management, HTTPS
-- 📈 **Escalabilidade:** Kubernetes, Docker Swarm
-- 🗄️ **Banco:** RDS, Cloud SQL (gerenciado)
-- 🐰 **RabbitMQ:** Amazon MQ, CloudAMQP (gerenciado)
-- 📝 **Logs:** ELK Stack, CloudWatch
-- 🔄 **CI/CD:** GitHub Actions, GitLab CI
-
-### Exemplo de Produção (Kubernetes)
-
-```yaml
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: order-worker
-spec:
-  replicas: 3
-  template:
-    spec:
-      containers:
-        - name: worker
-          image: php-app:latest
-          command: ["php", "bin/worker.php"]
-          resources:
-            requests:
-              memory: "128Mi"
-              cpu: "100m"
-            limits:
-              memory: "256Mi"
-              cpu: "200m"
-```
-
-## 📝 Observações para Entrevista
-
-- **Ambiente legado:** Apache + mod_php (simulado em Docker)
-- **Mensageria:** RabbitMQ com `php-amqplib`
-- **SQL:** PDO com prepared statements
-- **Arquitetura:** Front Controller + MVC + Worker Pattern
-- **Containerização:** Docker multi-service
+Para mais informações sobre a API da Asaas, consulte a [documentação oficial](https://docs.asaas.com/reference).

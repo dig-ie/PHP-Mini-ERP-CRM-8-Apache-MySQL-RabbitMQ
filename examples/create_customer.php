@@ -48,7 +48,6 @@ echo "Testando conexão com a API da Asaas...\n";
 try {
     $asaasController = new AsaasController();
     
-    // Test connection first
     $connectionTest = $asaasController->testConnection();
     echo "Status da conexão: " . ($connectionTest['success'] ? '✅ OK' : '❌ ERRO') . "\n";
     echo "URL da API: " . $connectionTest['apiUrl'] . "\n";
@@ -61,7 +60,6 @@ try {
     
     echo "\nVerificando se cliente já existe...\n";
     
-    // Check if customer already exists by CPF/CNPJ
     $existingCustomer = $asaasController->findCustomerByCpfCnpj($customerData['cpfCnpj']);
     
     if ($existingCustomer['success']) {
