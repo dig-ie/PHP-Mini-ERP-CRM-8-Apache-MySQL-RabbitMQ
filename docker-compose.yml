@@ -18,6 +18,8 @@ services:
       RABBITMQ_PORT: ${RABBITMQ_PORT:-5672}
       RABBITMQ_USER: ${RABBITMQ_USER:-guest}
       RABBITMQ_PASS: ${RABBITMQ_PASS:-guest}
+      ASAAS_API_URL: ${ASAAS_API_URL:-https://api-sandbox.asaas.com/v3}
+      ASAAS_ACCESS_TOKEN: ${ASAAS_ACCESS_TOKEN:-}
     volumes:
       - ./:/var/www/html
     depends_on:
@@ -71,6 +73,8 @@ services:
       RABBITMQ_PORT: ${RABBITMQ_PORT:-5672}
       RABBITMQ_USER: ${RABBITMQ_USER:-guest}
       RABBITMQ_PASS: ${RABBITMQ_PASS:-guest}
+      ASAAS_API_URL: ${ASAAS_API_URL:-https://api-sandbox.asaas.com/v3}
+      ASAAS_ACCESS_TOKEN: ${ASAAS_ACCESS_TOKEN:-}
     volumes:
       - ./:/var/www/html
     depends_on:
